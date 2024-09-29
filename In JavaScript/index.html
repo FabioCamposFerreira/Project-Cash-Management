@@ -35,20 +35,19 @@
                 <option value="novembro">Novembro</option>
                 <option value="dezembro">Dezembro</option>
             </select>
-        </div>
-
+           
+        </div><br>
+        <label for="ano">Ano:</label><br>
+        <input type="number" name="" id="ano">
+<br><br>
         <div class="form-group">
             <label class="botao botao-carregar-arquivo" for="transacoes">Carregar Arquivo CSV</label>
-            <input type="file" name="transacoes" id="transacoes" style="display: none;">
+            <input type="file" name="transacoes" onchange="abrirExtrato();" id="transacoes" style="display: none;">
             <p style="display: none;" class="aviso">
                 O arquivo deve estar em formato CSV com três colunas: data, valor e entrou/saiu.
                 Cada linha representa uma transação (a primeira linha é ignorada, pois contém o título).
             </p>
         </div>
-
-        <!-- Botão para cadastrar transações -->
-        <button class="btn btn-primary" onclick="cadastrarListaTransacoes();">Cadastrar Transações</button>
-    </div>
     
     <table class="table mt-4">
         <thead>
@@ -61,8 +60,8 @@
             </tr>
         </thead>
         <tbody id="tabela-transacao">
-            <tr id="linha-transacao">
-                <th scope="row">1</th>
+            <tr id="linha-transacao" style="display: none;">
+                <th scope="row" id="numeroLinha">1</th>
                 <td><span id="data">01/07/2024</span></td>
                 <td>R$ <span id="valor">100,00</span></td>
                 <td>
@@ -89,15 +88,16 @@
                         <option value="ipva">IPVA</option>
                         <option value="academia">Academia</option>
                         <option value="investimentos">Investimentos</option>
-                        <option value="outros">Outros</option>
                         <option value="gasolina">Gasolina</option>
                         <option value="juros">Juros</option>
+                        <option value="outros">Outros</option>
                     </select>
                 </td>
             </tr>
         </tbody>
     </table>
-
+<!-- Botão para salvar transações -->
+<button class="btn btn-primary" onclick="cadastrarCSV();">Baixar Tabela</button>
     <script src="index.js"></script>
 </body>
 
