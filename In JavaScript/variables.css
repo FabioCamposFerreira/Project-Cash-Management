@@ -1,0 +1,9 @@
+:root {
+    --cor-principal: #075959; /* Azul */
+    --cor-secundaria: #73A605; /* Verde */
+    --cor-terciaria: #ABD94A; /* Vermelho */
+    --cor-erro-primaria: #F20505;
+    --cor-erro-secundaria:#F22E76;
+    --cor-fundo: #FFFFFF; /* Cinza claro */
+    --cor-texto: #0D0D0D; /* Texto escuro */
+}

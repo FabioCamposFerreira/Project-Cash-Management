@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR"> <!-- Corrigido para o idioma português do Brasil -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Transações</title>
+    <link rel="stylesheet" href="variables.css">
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Cadastrar Transações do Mês</h1>
+
+        <div class="form-group">
+            <label for="mes">Mês:</label>
+            <!-- Dropdown para selecionar o mês -->
+            <select id="mes" name="mes" class="form-select">
+                <option value="janeiro">Janeiro</option>
+                <option value="fevereiro">Fevereiro</option>
+                <option value="marco">Março</option>
+                <option value="abril">Abril</option>
+                <option value="maio">Maio</option>
+                <option value="junho">Junho</option>
+                <option value="julho">Julho</option>
+                <option value="agosto">Agosto</option>
+                <option value="setembro">Setembro</option>
+                <option value="outubro">Outubro</option>
+                <option value="novembro">Novembro</option>
+                <option value="dezembro">Dezembro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="botao botao-carregar-arquivo" for="transacoes">Carregar Arquivo CSV</label>
+            <input type="file" name="transacoes" id="transacoes" style="display: none;">
+            <p style="display: none;" class="aviso">
+                O arquivo deve estar em formato CSV com três colunas: data, valor e entrou/saiu.
+                Cada linha representa uma transação (a primeira linha é ignorada, pois contém o título).
+            </p>
+        </div>
+
+        <!-- Botão para cadastrar transações -->
+        <button class="btn btn-primary" onclick="cadastrarListaTransacoes();">Cadastrar Transações</button>
+    </div>
+    
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Data</th>
+                <th scope="col">Valor</th> <!-- Corrigido: "Valar" para "Valor" -->
+                <th scope="col">Credor</th>
+                <th scope="col">Tipo de Transação</th> <!-- Corrigido: "Tipo Transação" para "Tipo de Transação" -->
+            </tr>
+        </thead>
+        <tbody id="tabela-transacao">
+            <tr id="linha-transacao">
+                <th scope="row">1</th>
+                <td><span id="data">01/07/2024</span></td>
+                <td>R$ <span id="valor">100,00</span></td>
+                <td>
+                    <!-- Seletor de credor -->
+                    <select id="credor" name="credor" class="form-select mb-2">
+                        <option value="Eu">Eu</option>
+                        <option value="Mãe">Mãe</option>
+                    </select>
+                </td>
+                <td>
+                    <!-- Seletor de tipo de transação -->
+                    <select id="tipo-transacao" name="tipo-transacao" class="form-select">
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="conta_luz_limao">Conta Luz Limão</option>
+                        <option value="conta_luz_roca">Conta Luz Roça</option>
+                        <option value="conta_agua">Conta Água</option>
+                        <option value="internet">Internet</option>
+                        <option value="aluguel">Aluguel</option>
+                        <option value="aposentadoria">Aposentadoria</option>
+                        <option value="salario">Salário</option>
+                        <option value="itr">ITR</option>
+                        <option value="iptu_limao">IPTU Limão</option>
+                        <option value="iptu_alameda">IPTU Alameda</option>
+                        <option value="ipva">IPVA</option>
+                        <option value="academia">Academia</option>
+                        <option value="investimentos">Investimentos</option>
+                        <option value="outros">Outros</option>
+                        <option value="gasolina">Gasolina</option>
+                        <option value="juros">Juros</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

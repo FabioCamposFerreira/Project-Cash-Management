@@ -1,0 +1,18 @@
+.botao{
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+
+}
+
+.botao-carregar-arquivo{
+    
+
+}
+
+.aviso{
+    color:red;
+    background-color: rgba(255, 0, 0, 0.5);
+    display: none;
+    border-color: red;
+}
