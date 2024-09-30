@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Transações</title>
+    <link rel="stylesheet" href="variables.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>DashBoard</h1>
+        <label class="btn btn-primary" for=transacoes>Escolha os arquivos para filtrar</label>
+        <input type="file" name="transacoes" onchange="abrirExtrato();" id="transacoes" style="display: none;">
+    </div>
+
+    <div class="container mt-4"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Eu</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="table-me">
+                    <tr>
+                        <td>Alimentação</td>
+                        <td>R$ <span id="alimentacao-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Luz Limão</td>
+                        <td>R$ <span id="conta-luz-limao-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Luz Roça</td>
+                        <td>R$ <span id="conta-luz-roca-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Água</td>
+                        <td>R$ <span id="conta-agua-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Internet</td>
+                        <td>R$ <span id="internet-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Aluguel</td>
+                        <td>R$ <span id="aluguel-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Aposentadoria</td>
+                        <td>R$ <span id="aposentadoria-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Salário</td>
+                        <td>R$ <span id="salario-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>ITR</td>
+                        <td>R$ <span id="itr-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPTU Limão</td>
+                        <td>R$ <span id="iptu-limao-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPTU Alameda</td>
+                        <td>R$ <span id="iptu-alameda-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPVA</td>
+                        <td>R$ <span id="ipva-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Academia</td>
+                        <td>R$ <span id="academia-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Investimentos</td>
+                        <td>R$ <span id="investimentos-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gasolina</td>
+                        <td>R$ <span id="gasolina-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Juros</td>
+                        <td>R$ <span id="juros-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Outros</td>
+                        <td>R$ <span id="outros-eu">0</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong>R$ <span id="total-me">0</span></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h2>Mãe</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="table-mother">
+                    <tr>
+                        <td>Alimentação</td>
+                        <td>R$ <span id="alimentacao-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Luz Limão</td>
+                        <td>R$ <span id="conta-luz-limao-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Luz Roça</td>
+                        <td>R$ <span id="conta-luz-roca-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Conta Água</td>
+                        <td>R$ <span id="conta-agua-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Internet</td>
+                        <td>R$ <span id="internet-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Aluguel</td>
+                        <td>R$ <span id="aluguel-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Aposentadoria</td>
+                        <td>R$ <span id="aposentadoria-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Salário</td>
+                        <td>R$ <span id="salario-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>ITR</td>
+                        <td>R$ <span id="itr-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPTU Limão</td>
+                        <td>R$ <span id="iptu-limao-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPTU Alameda</td>
+                        <td>R$ <span id="iptu-alameda-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>IPVA</td>
+                        <td>R$ <span id="ipva-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Academia</td>
+                        <td>R$ <span id="academia-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Investimentos</td>
+                        <td>R$ <span id="investimentos-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gasolina</td>
+                        <td>R$ <span id="gasolina-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Juros</td>
+                        <td>R$ <span id="juros-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td>Outros</td>
+                        <td>R$ <span id="outros-mae">0</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong>R$ <span id="total-mother">0</span></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+
+
+
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

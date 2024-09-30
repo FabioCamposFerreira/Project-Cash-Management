@@ -1,0 +1,15 @@
+        /* Estilo para tabelas menores */
+        .table {
+            width: 100%;
+            max-width: 300px;
+            /* Limita a largura das tabelas */
+            margin: auto;
+            /* Centraliza as tabelas */
+        }
+
+        .table td {
+            font-size: 0.8rem;
+            /* Tamanho da fonte menor */
+            padding: 0;
+            /* Remove padding para diminuir altura */
+        }
