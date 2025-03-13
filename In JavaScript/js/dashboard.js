@@ -21,6 +21,7 @@ function createValuesObject() {
     investimentos: 0,
     gasolina: 0,
     juros: 0,
+    lauane:0,
     outros: 0,
     total: 0,
   };
