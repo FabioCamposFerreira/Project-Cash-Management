@@ -1,6 +1,6 @@
 :root {
-    --cor-principal: #075959; /* Azul */
-    --cor-secundaria: #73A605; /* Verde */
+    --primary-color: #075959; /* Azul */
+    --secundary-color: rgb(244, 252, 233); /* Verde */
     --cor-terciaria: #ABD94A; /* Vermelho */
     --cor-erro-primaria: #F20505;
     --cor-erro-secundaria:#F22E76;

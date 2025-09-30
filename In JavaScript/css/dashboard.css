@@ -1,15 +1,91 @@
-        /* Estilo para tabelas menores */
-        .table {
-            width: 100%;
-            max-width: 300px;
-            /* Limita a largura das tabelas */
-            margin: auto;
-            /* Centraliza as tabelas */
-        }
+@import url('variables.css');
 
-        .table td {
-            font-size: 0.8rem;
-            /* Tamanho da fonte menor */
-            padding: 0;
-            /* Remove padding para diminuir altura */
-        }
+body{
+    background-color: var(--secundary-color);
+}
+
+#main{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 80%;
+    min-height: 80vh;
+    background: var(--primary-color);
+    padding: 3rem;
+    border-radius: 1rem;
+    color:white;
+    margin: auto;
+    width: fit-content;
+}
+
+#firstLine{
+    display: flex;
+}
+
+#filterActive{
+    background: var(--secundary-color);
+    border-radius: 1rem;
+    color:black;
+    padding: 0.5rem;
+    margin-right: auto;
+}
+#buttomFilter{
+    background: var(--secundary-color);
+    border-radius: 1rem;
+    color:black;
+    padding: 0.5rem;
+}
+
+#filterMenu{
+    display: none;
+}
+
+#KPIS{
+    display: flex;
+    gap: 1rem;
+}
+
+#KPIS > .KPI{
+    background: var(--secundary-color);
+    border-radius: 1rem;
+    color:black;
+    padding: 0.5rem;
+    margin-right: auto;
+}
+
+#tableTypeProfit{
+    width: 100%;
+    border: 0px;
+    border-collapse: collapse;
+}
+
+#tableTypeProfit tr{
+    background: var(--secundary-color);
+    border-radius: 10rem;
+    color:black;
+    padding-left: 0.5rem;
+    margin-right: auto;
+    padding-top: 1rem;
+}
+
+#tableTypeProfit>thead tr{
+    background: rebeccapurple;
+    border-radius: 10rem;
+    color:white;
+    padding-left: 0.5rem;
+    margin-right: auto;
+    text-align: left;
+}
+
+#tableTypeProfit td{
+    padding: 0.5rem;    
+}
+
+#tableTypeProfit td>p{
+    display: inline;
+    margin-right: auto;
+}
+
+#tableTypeProfit .tableButton{
+    margin: auto;
+}
