@@ -1,9 +1,58 @@
 :root {
-    --primary-color: #075959; /* Azul */
-    --secundary-color: rgb(244, 252, 233); /* Verde */
-    --cor-terciaria: #ABD94A; /* Vermelho */
-    --cor-erro-primaria: #F20505;
-    --cor-erro-secundaria:#F22E76;
-    --cor-fundo: #FFFFFF; /* Cinza claro */
-    --cor-texto: #0D0D0D; /* Texto escuro */
+  /* Base */
+  --color-bg: #F6F6FC;            /* fundo app */
+  --color-surface: #FCFBFE;       /* cards */
+  --color-surface-variant: #F5F6FA;
+  --color-text: #11121D;
+  --color-border: #EAEAF3;
+
+  /* Marca e primárias */
+  --color-brand: #976CF8;         /* roxo mascote */
+  --color-brand-600: #8167E7;
+  --color-brand-400: #9B74EC;
+
+  --color-primary: #059DFD;       /* azul login */
+  --color-secondary: #03C9EF;     /* ciano UI */
+  --color-link: #0F75C9;
+
+  /* Acentos (tentáculos) */
+  --color-accent-pink: #F05BB5;
+  --color-accent-yellow: #FBE33F;
+  --color-accent-cyan: #00D6E6;
+
+  /* Estados */
+  --color-success: #00D6E6;
+  --color-warning: #FBE33F;
+  --color-error:   #E86B9A;
+  --color-info:    #77BFDE;
+
+  /* Gradiente hero (login) */
+  --gradient-hero: linear-gradient(180deg, #976FF8 0%, #8167E7 45%, #059DFD 100%);
+}
+
+/* Tema escuro sugerido */
+:root[data-theme="dark"] {
+  --color-bg: #11121D;
+  --color-surface: #17192C;
+  --color-surface-variant: #1E2135;
+  --color-text: #F5F6FA;
+  --color-border: #2A2D3A;
+
+  --color-brand: #9B74EC;
+  --color-brand-600: #976CF8;
+  --color-brand-400: #B79BFF;
+
+  --color-primary: #79E1FE;
+  --color-secondary: #00F4D4;
+  --color-link: #79E1FE;
+
+  --color-accent-pink: #E86B9A;
+  --color-accent-yellow: #FBE33F;
+
+  --color-success: #00F4D4;
+  --color-warning: #FBE33F;
+  --color-error:   #E86B9A;
+  --color-info:    #59C8F0;
+
+  --gradient-hero: linear-gradient(180deg, #2A1B45 0%, #1C245E 50%, #0C2E66 100%);
 }
