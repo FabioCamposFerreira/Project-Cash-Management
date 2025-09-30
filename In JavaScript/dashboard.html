@@ -1,91 +1,340 @@
-<!DOCTYPE html>
-<html lang="en">
+# Finances
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="./css/dashboard.css">
-</head>
+Controle simples e seguro de receitas, despesas e metas.
 
-<body>
-    <div id="main">
-        <div id="firstLine">
-            <p id="filterActive">ALL</p>
-            <button id="buttomFilter">Filter v</button>
-            <!-- TODO: filter float optons -->
-            <div id="filterMenu">
-                <!-- TODO: Change to calender widget with range -->
-                <div id="filterMenu">
-                    <label for="yearFilter">Year</label>
-                    <select id="yearFilter" name="yearFilter" multiple="multiple">
-                        <option value="2020">2020</option>
-                        <option value="2021">2021</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                        <option value="2029">2029</option>
-                        <option value="2030">2030</option>
-                    </select>
-                    <label for="monthFilter">Mount</label>
-                    <select id="monthFilter" name="monthFilter" multiple="multiple>
-                        <option value=""></option>
-                        <option value=" January">January</option>
-                        <option value="February">February</option>
-                        <option value="March">March</option>
-                        <option value="April">April</option>
-                        <option value="May">May</option>
-                        <option value="June">June</option>
-                        <option value="July">July</option>
-                        <option value="August">August</option>
-                        <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November">November</option>
-                        <option value="December">December</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="KPIS">
-        <div class="KPI">
-            <p>Balance: <br> <span id="Balance">R$ 1000,00</span></p>
-        </div>
-        <div class="KPI">
-            <p>Profit of this month:<br> <span id="ProfitMonth">R$ 1000,00</span></p>
-            <p>Available up to the end of the month: <span id="ProfitMonth">R$ 1000,00</span></p>
-        </div>
-        <div class="KPI">
-            <p><span></span></p>
-        </div>
-    </div>
-    <div>
-        <table id="tableTypeProfit">
-            <thead>
-                <th>Type</th>
-                <th>Balance</th>
-                <th>Mean</th>
-                <th></th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Água</td>
-                    <td>
-                        <p>R$</p> <span>-50</span>
-                    </td> <!--TODO: IF bellow mean green, else red -->
-                    <td>
-                        <p>R$</p> <span>-60</span>
-                    </td>
-                    <td><button class="tableButton">></button></td> <!--TODO: show modal with graphic, graphic is not comulative -->
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
-</body>
-<script type="module" src="./js/inAllPages.js"></script>
+## Objetivos
 
-</html>
+* Login seguro.
+* Cadastrar categorias de receitas e despesas com metas mensais (mínimo para receitas, máximo para despesas) e alertas.
+* Lançar transações: data, categoria, valor, comentário.
+* Persistir tudo em banco com RLS.
+* Dashboard com 3 KPIs:
+
+  1. Saldo no período filtrado.
+  2. Saldo do mês atual.
+  3. Desvio do orçamento do mês (%) = (Despesas do mês − Orçamento do mês) ÷ Orçamento do mês.
+
+## Decisão técnica
+
+* **Frontend**: Next.js 14 (App Router), Tailwind, shadcn/ui.
+* **Backend**: Route Handlers no próprio Next.
+* **Banco/Auth**: Supabase Postgres + Auth.
+* **DB Access**: `@supabase/supabase-js` (sem ORM).
+* **Validação**: Zod.
+* **Gráficos**: Chart.js via `react-chartjs-2`.
+* **Deploy**: Vercel (web) + Supabase (DB/Auth).
+* **Observabilidade**: Sentry (opcional).
+* **Rate limit**: Middleware + Upstash Redis (opcional).
+
+## Escopo do MVP
+
+* Login por e-mail (Supabase Auth).
+* CRUD de Pessoas e Categorias.
+* Transações: criar, listar, editar, filtrar.
+* Dashboard:
+
+  * 3 KPIs acima.
+  * Pizza de despesas por categoria no período filtrado (padrão: mês corrente).
+* RLS por usuário desde o início.
+
+## Modelagem de dados
+
+> Não armazene senha. Supabase Auth cuida disso. Use tabela `profiles` para nome.
+
+**Tabelas**
+
+* `profiles`
+
+  * `user_id uuid PK references auth.users NOT NULL`
+  * `name text`
+
+* `people`
+
+  * `id uuid PK default gen_random_uuid()`
+  * `user_id uuid NOT NULL`
+  * `name text NOT NULL`
+
+* `categories`
+
+  * `id uuid PK default gen_random_uuid()`
+  * `user_id uuid NOT NULL`
+  * `name text NOT NULL`
+  * `kind text NOT NULL check (kind in ('income','expense'))`
+  * `monthly_goal numeric(14,2)`
+
+    * Semântica: para `income` = mínimo desejado no mês; para `expense` = teto do mês.
+
+* `transactions`
+
+  * `id uuid PK default gen_random_uuid()`
+  * `user_id uuid NOT NULL`
+  * `person_id uuid references people(id)`
+  * `category_id uuid references categories(id) NOT NULL`
+  * `date date NOT NULL`
+  * `amount numeric(14,2) NOT NULL check (amount > 0)`
+  * `note text`
+  * `kind text generated always as ( (select kind from categories c where c.id = category_id) ) stored`
+  * `signed_amount numeric(14,2) generated always as (case when kind='expense' then -amount else amount end) stored`
+
+**Saldo por pessoa** = soma de `signed_amount` filtrada por pessoa e período.
+
+## SQL inicial (Supabase → SQL Editor)
+
+```sql
+-- extensões
+create extension if not exists pgcrypto;
+create extension if not exists "uuid-ossp";
+
+-- profiles
+create table if not exists public.profiles(
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  name text
+);
+
+-- people
+create table if not exists public.people(
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  name text not null
+);
+
+-- categories
+create table if not exists public.categories(
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  name text not null,
+  kind text not null check (kind in ('income','expense')),
+  monthly_goal numeric(14,2)
+);
+
+-- transactions
+create table if not exists public.transactions(
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  person_id uuid references public.people(id) on delete set null,
+  category_id uuid not null references public.categories(id),
+  date date not null,
+  amount numeric(14,2) not null check (amount > 0),
+  note text,
+  kind text generated always as (
+    (select kind from public.categories c where c.id = category_id)
+  ) stored,
+  signed_amount numeric(14,2) generated always as (
+    case when kind='expense' then -amount else amount end
+  ) stored
+);
+
+-- índices
+create index if not exists idx_tx_user_date on public.transactions(user_id, date desc);
+create index if not exists idx_tx_user_cat on public.transactions(user_id, category_id);
+create index if not exists idx_cat_user on public.categories(user_id);
+create index if not exists idx_people_user on public.people(user_id);
+
+-- RLS
+alter table public.profiles     enable row level security;
+alter table public.people       enable row level security;
+alter table public.categories   enable row level security;
+alter table public.transactions enable row level security;
+
+-- policies
+create policy "profiles sel" on public.profiles
+for select using (user_id = auth.uid());
+create policy "profiles ins" on public.profiles
+for insert with check (user_id = auth.uid());
+create policy "profiles upd" on public.profiles
+for update using (user_id = auth.uid());
+
+create policy "people sel" on public.people
+for select using (user_id = auth.uid());
+create policy "people ins" on public.people
+for insert with check (user_id = auth.uid());
+create policy "people upd" on public.people
+for update using (user_id = auth.uid());
+create policy "people del" on public.people
+for delete using (user_id = auth.uid());
+
+create policy "categories sel" on public.categories
+for select using (user_id = auth.uid());
+create policy "categories ins" on public.categories
+for insert with check (user_id = auth.uid());
+create policy "categories upd" on public.categories
+for update using (user_id = auth.uid());
+create policy "categories del" on public.categories
+for delete using (user_id = auth.uid());
+
+create policy "transactions sel" on public.transactions
+for select using (user_id = auth.uid());
+create policy "transactions ins" on public.transactions
+for insert with check (user_id = auth.uid());
+create policy "transactions upd" on public.transactions
+for update using (user_id = auth.uid());
+create policy "transactions del" on public.transactions
+for delete using (user_id = auth.uid());
+```
+
+## KPIs e queries
+
+Período filtrado: `:d_ini` a `:d_fim` por usuário `:uid`.
+
+* **KPI 1 — Saldo no período**
+
+```sql
+select coalesce(sum(signed_amount),0) as saldo
+from public.transactions
+where user_id = :uid and date between :d_ini and :d_fim;
+```
+
+* **KPI 2 — Saldo do mês atual**
+
+```sql
+with mm as (
+  select date_trunc('month', current_date)::date as ini,
+         (date_trunc('month', current_date) + interval '1 month - 1 day')::date as fim
+)
+select coalesce(sum(t.signed_amount),0) as saldo_mes
+from public.transactions t, mm
+where t.user_id=:uid and t.date between mm.ini and mm.fim;
+```
+
+* **KPI 3 — Desvio do orçamento do mês (%)**
+
+```sql
+with mm as (
+  select date_trunc('month', current_date)::date as ini,
+         (date_trunc('month', current_date) + interval '1 month - 1 day')::date as fim
+),
+orc as (
+  -- orçamento do mês: soma de monthly_goal das categorias expense
+  select coalesce(sum(monthly_goal),0) as orcamento
+  from public.categories
+  where user_id=:uid and kind='expense' and monthly_goal is not null
+),
+gasto as (
+  select coalesce(sum(amount),0) as despesas
+  from public.transactions t, mm
+  where t.user_id=:uid and t.kind='expense' and t.date between mm.ini and mm.fim
+)
+select case when orc.orcamento=0 then null
+            else round(100.0*(gasto.despesas - orc.orcamento)/orc.orcamento,2)
+       end as desvio_percent
+from orc, gasto;
+```
+
+* **Pizza despesas por categoria (período)**
+
+```sql
+select c.name, sum(t.amount) as total
+from public.transactions t
+join public.categories c on c.id=t.category_id
+where t.user_id=:uid and t.kind='expense' and t.date between :d_ini and :d_fim
+group by c.name
+having sum(t.amount) > 0
+order by total desc;
+```
+
+## Telas
+
+* **Login**: e-mail e senha (Supabase).
+* **Cadastro de conta**: e-mail, senha, nome → cria `profiles`.
+* **Dashboard**: 3 KPIs. Pizza “Despesas por categoria”. Tabela “Balanço do período” e comparativos: mês atual vs média histórica do usuário, com cor verde se abaixo do teto e vermelho se acima. Mostrar `(±dif)` ao lado.
+* **Transações**: tabela com data, pessoa, categoria, valor, comentário. Ordenar por data desc. Primeira linha é de criação rápida. Ícone lápis para editar. Filtros por coluna.
+* **Categorias**: CRUD com `kind` e `monthly_goal`.
+* **Pessoas**: CRUD simples.
+
+## Regras de negócio
+
+* `monthly_goal`:
+
+  * `income`: alvo mínimo do mês. Alertar se receitas < alvo.
+  * `expense`: teto do mês. Alertar se despesas > teto.
+* Saldo por pessoa e período: soma de `signed_amount` filtrada.
+
+## Instalação
+
+Pré-requisitos: Node 20+, PNPM/NPM, contas Supabase e Vercel.
+
+1. Criar projeto no Supabase.
+2. Executar o SQL acima.
+3. Anotar URL e chaves.
+
+`.env.local`
+
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...    # só no servidor
+SENTRY_DSN=...                   # opcional
+UPSTASH_REDIS_REST_URL=...       # opcional
+UPSTASH_REDIS_REST_TOKEN=...     # opcional
+```
+
+4. Instalar e rodar:
+
+```bash
+pnpm i
+pnpm dev
+```
+
+5. Deploy:
+
+* Vercel: importar repositório e variáveis de ambiente.
+* Supabase já em produção.
+
+## Scripts
+
+```bash
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+pnpm test
+```
+
+## Segurança
+
+* Supabase Auth.
+* RLS ativo em todas as tabelas.
+* Nenhuma chave sensível no cliente.
+* Validação Zod nas rotas que gravam.
+* Rate limit opcional para POST/PUT/DELETE.
+* HTTPS por padrão.
+* Backups + PITR no Supabase.
+* Logs de erro com Sentry (opcional).
+
+## Estrutura de pastas
+
+```
+/app
+  /(dashboard)
+  /auth
+  /api
+    /people
+    /categories
+    /transactions
+/src
+  /components
+  /lib        # supabase client (client/server), zod, queries
+  /hooks
+```
+
+## Roadmap curto
+
+* PWA básico (offline read-only).
+* Regras automáticas de categorização por palavras-chave.
+* Importação CSV.
+
+## How to use
+
+* Criar conta e logar.
+* Cadastrar Pessoas e Categorias.
+* Lançar transações.
+* Consultar dashboard e ajustar metas.
+
+## Tecnologias
+
+Next.js, Tailwind, shadcn/ui, Supabase (Postgres/Auth/RLS), `supabase-js`, Zod, Chart.js.
+
+## Autor
+
+**Fábio Campos Ferreira**
+Licença: MIT.
