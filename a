@@ -1,0 +1,655 @@
+Aqui está a documentação em formato Markdown detalhando toda a lógica, matemática e arquitetura do seu sistema de alocação de ativos. 
+
+Você pode copiar o conteúdo abaixo e salvá-lo diretamente como um arquivo `.md` (ou usá-lo como um `project_rules.md` para guiar ferramentas de automação e loops de programação caso decida migrar essa estrutura da planilha para um aplicativo próprio no futuro).
+
+***
+
+# Documentação: Sistema Automatizado de Alocação e Valuation de Ativos
+
+Esta documentação descreve a lógica de balanceamento de carteira via *Dollar-Cost Averaging* (DCA), combinada com análise fundamentalista (P/L, P/VP) para seleção dos ativos com maior margem de segurança.
+
+## 1. Fluxograma Lógico do Sistema
+
+O pipeline de decisão a cada novo aporte segue uma ordem rigorosa para garantir que o capital seja alocado onde há maior defasagem percentual e maior desconto no preço.
+
+1. **Injeção de Capital:** Definição do Patrimônio Atual e do Valor do Aporte mensal.
+2. **Cálculo do Rebalanceamento:** O algoritmo avalia a distância entre o peso ideal de cada classe de ativo (Ações, FIIs, etc.) e a alocação atual.
+3. **Coleta de Dados Fundamentalistas:** Extração automatizada (via API ou funções nativas) de Preço, LPA (Lucro por Ação), VPA (Valor Patrimonial por Ação) e DPA (Dividendos).
+4. **Cálculo do Valuation:** Aplicação da fórmula de Preço Teto para descobrir o valor intrínseco de cada ativo mapeado.
+5. **Cálculo da Margem de Segurança:** Comparação entre o Preço Teto e a Cotação Atual.
+6. **Filtro Top 3:** Ranqueamento decrescente da Margem de Segurança. Apenas os 3 ativos mais descontados de cada grupo são selecionados.
+7. **Geração das Ordens de Compra:** Divisão do capital da classe pelo Top 3 e cálculo de cotas inteiras a serem adquiridas.
+
+---
+
+## 2. Equações Matemáticas
+
+As fórmulas abaixo são a base do motor de decisão. Caso o sistema seja escalado para um backend customizado, essas equações podem ser encapsuladas em métodos isolados (como *Java Actions*) para processamento.
+
+### 2.1 Rebalanceamento de Categorias
+
+Determina exatamente quanto dinheiro deve ir para cada grupo de ativos para forçar o retorno aos percentuais ideais.
+
+* $P_{atual}$: Patrimônio atual.
+* $V_{aporte}$: Valor do novo aporte.
+* $w_i$: Peso ideal da categoria $i$ (ex: 0.25 para FIIs).
+* $E_i$: Valor já investido na categoria $i$.
+* $A_i$: Valor final a ser aportado na categoria $i$.
+
+$$A_i = \max\left(0, \left[ (P_{atual} + V_{aporte}) \cdot w_i \right] - E_i \right)$$
+
+### 2.2 Cálculo do Preço Teto ($P_{teto}$)
+
+**Para Ações (Fórmula de Benjamin Graham):**
+Avalia empresas com base na relação Preço/Lucro (P/L) e Preço/Valor Patrimonial (P/VP), assumindo limites máximos teóricos de 15 e 1.5, resultando na constante 22.5.
+
+* $LPA$: Lucro por Ação.
+* $VPA$: Valor Patrimonial por Ação.
+
+$$P_{teto\_graham} = \sqrt{22.5 \cdot LPA \cdot VPA}$$
+
+**Para FIIs e Ações Maduras (Fórmula de Décio Bazin):**
+Avalia o ativo exclusivamente pela sua capacidade de gerar caixa recorrente.
+
+* $DPA$: Dividendos pagos nos últimos 12 meses (ou média de 5 anos).
+* $DY_{alvo}$: Dividend Yield alvo (ex: 0.06).
+
+$$P_{teto\_bazin} = \frac{DPA}{DY_{alvo}}$$
+
+### 2.3 Margem de Segurança ($MS$)
+
+A "gordura" percentual entre o valor intrínseco e o valor de tela. Ativos com $MS$ negativo são imediatamente descartados da fila de compras.
+
+* $P_{mercado}$: Cotação em tempo real.
+
+$$MS = \left( \frac{P_{teto} - P_{mercado}}{P_{teto}} \right) \cdot 100$$
+
+### 2.4 Quantidade de Cotas para Compra ($Q$)
+
+O valor liberado para a classe de ativos ($A_i$) é dividido por 3 (para focar no Top 3). A quantidade de ações compradas deve ser um número inteiro.
+
+* $A_{ativo}$: Capital destinado ao ativo individual ($A_i / 3$).
+
+$$Q = \left\lfloor \frac{A_{ativo}}{P_{mercado}} \right\rfloor$$
+
+---
+
+## 3. Guia de Implementação: Arquitetura
+
+### 3.1. Aquisição de Dados de Tela
+No Google Sheets, a cotação em tempo real é obtida sem necessidade de requisições externas:
+* Ações BR: `=GOOGLEFINANCE("BVMF:EGIE3"; "price")`
+* Ações EUA: `=GOOGLEFINANCE("AAPL"; "price")`
+
+### 3.2. Integração de Dados Fundamentalistas (API)
+Para indicadores financeiros (LPA, VPA, DPA) necessários para os cálculos de $P_{teto\_graham}$, o Google Sheets nativo é insuficiente. 
+
+**Solução:**
+1. Criar um endpoint de consumo via *Google Apps Script*.
+2. Utilizar uma API pública gratuita (ex: Brapi.dev ou HG Brasil).
+3. Configurar um gatilho de atualização diária para não sobrecarregar as requisições.
+
+### 3.3. O Motor de Ranqueamento (SQL / Sheets)
+Para automatizar a escolha dos 3 melhores ativos, a arquitetura de dados deve isolar a análise fundamentalista em uma tabela/aba separada da interface do usuário.
+
+Se mantido no Google Sheets, utilize a seguinte lógica combinada:
+`=CLASSIFICAR(FILTER(A2:D; C2:C > 0); 4; FALSO)`
+*(Onde A2:D é a matriz de ativos, C é a coluna de Margem de Segurança garantindo que seja > 0, e a ordenação é feita pela própria Margem de Segurança de forma decrescente).*
+
+Se os dados forem migrados para um banco de dados relacional posteriormente, esse ranqueamento pode ser resolvido com alto desempenho utilizando *Common Table Expressions* (CTEs) e a função de janela `ROW_NUMBER()` particionada por categoria de ativo.
+
+
+
+
+
+Vou examinar os arquivos HTML na pasta `sticht` e o estado do projeto para montar um plano claro.
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/In%20JavaScript/sticht)
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/In%20JavaScript/sticht/Dashboard.html#1-1), lines 1 to 200
+
+Estou verificando se já existe algum projeto React no workspace para alinhar o plano corretamente.
+
+Searched for files matching `**/package.json`, no matches
+
+## Plano de ação para transformar os HTMLs do `sticht` em React Bootstrap
+
+### 1) O que você deve baixar AGORA
+
+1. `Node.js` LTS para Windows
+   - Baixe o instalador oficial do Node.js (por exemplo `node-vxx.x.x-x64.msi`).
+   - Isso traz o `npm`, que é usado para instalar React e dependências.
+
+2. `Visual Studio Code`
+   - Se ainda não tiver, baixe o instalador.
+
+3. Preparar um projeto React agora, enquanto tem internet
+   - Se possível, crie o projeto React já na sua máquina online.
+   - Instale as dependências:
+     - `react-bootstrap`
+     - `bootstrap`
+     - opcional: `react-router-dom` (se quiser fazer várias páginas com rota)
+
+4. Baixar o projeto pronto para levar `offline`
+   - Se não puder criar o projeto completo, pelo menos baixe:
+     - pacote `bootstrap`
+     - pacote `react-bootstrap`
+     - os arquivos do `node_modules` necessários
+   - Melhor: criar o projeto inteiro hoje e copiar a pasta para uma pen drive ou salvar no notebook.
+
+### 2) Por que você precisa disso
+
+- Sem internet na roça, você não poderá rodar:
+  - `npx create-react-app`
+  - `npm install`
+- Então precisa ter:
+  - Node.js instalado
+  - projeto React já criado
+  - dependências já instaladas localmente
+
+### 3) Modelo de setup que você deve criar agora
+
+1. Crie um novo app React:
+   - `npx create-react-app cash-management`
+   - ou `npm create vite@latest cash-management -- --template react`
+
+2. Entre na pasta:
+   - `cd cash-management`
+
+3. Instale o Bootstrap e React Bootstrap:
+   - `npm install react-bootstrap bootstrap`
+
+4. Se for usar várias telas:
+   - `npm install react-router-dom`
+
+5. No `src/index.js` (ou `src/main.jsx`) importe:
+   - `import 'bootstrap/dist/css/bootstrap.min.css';`
+
+### 4) Como converter os arquivos `sticht`
+
+Você tem estas páginas:
+- Dashboard.html
+- `login.html`
+- `Transactions.html`
+- `Types.html`
+- `create.html`
+- `ModalNewTransaction.html`
+- `modalNewType.html`
+- `modalURL.html`
+
+Passo a passo:
+
+1. Crie componentes React para cada página
+   - Ex: `src/pages/Dashboard.jsx`
+   - Ex: `src/pages/Login.jsx`
+   - Ex: `src/pages/Transactions.jsx`
+
+2. Copie o HTML de cada arquivo para JSX
+   - troque `class="..."` por `className="..."`
+   - remova `<script src="https://cdn.tailwindcss.com"...>`
+   - remova links de Google Fonts se for trabalhar offline
+
+3. Substitua o layout Tailwind por Bootstrap
+   - use componentes como:
+     - `Container`
+     - `Row`
+     - `Col`
+     - `Button`
+     - `Form`
+     - `Table`
+     - `Card`
+     - `Modal`
+   - ex: `className="flex justify-between"` vira `className="d-flex justify-content-between"`
+
+4. Substitua ícones externos
+   - os HTMLs usam `material-symbols-outlined` do Google
+   - offline, melhor usar:
+     - `react-bootstrap` + texto
+     - ou baixar `bootstrap-icons`
+     - ou usar emojis simples
+   - caso contrário, esses ícones não vão aparecer sem internet
+
+5. Trate os modais
+   - `ModalNewTransaction.html`, `modalNewType.html`, `modalURL.html`
+   - no React Bootstrap, use o componente `<Modal>`
+
+6. Organize navegação
+   - se quiser várias páginas, use `react-router-dom`
+   - caso contrário, faça um único app com `if`/estado para mudar a página
+
+### 5) O que é mais fácil para você agora
+
+- Não tente migrar todo o Tailwind literal.
+- Use Bootstrap para o layout e cor.
+- Mantém o conteúdo principal do HTML.
+- Use classes Bootstrap prontas, porque você não precisa saber CSS profundo.
+
+### 6) O que levar para trabalhar offline
+
+- A pasta do projeto React já criada
+- `node_modules` completa
+- `package.json` e `package-lock.json`
+- O código HTML original da pasta `In JavaScript/sticht`
+- VS Code instalado
+- Node.js instalado
+
+### 7) Exemplo de transformação simples
+
+HTML original:
+```html
+<button class="bg-primary text-white px-4 py-2 rounded-none">Entrar</button>
+```
+
+React Bootstrap:
+```jsx
+import Button from 'react-bootstrap/Button';
+
+<Button variant="primary">Entrar</Button>
+```
+
+### 8) Dicas finais
+
+- Se você não entende React, foque primeiro em:
+  - criar o app
+  - entender onde colocar cada página
+  - copiar o HTML e transformar `class` em `className`
+- Se quiser, monte somente duas telas primeiro:
+  - login
+  - dashboard
+- Depois avance nas outras páginas.
+
+---
+
+## Resumo rápido
+
+1. Baixe `Node.js` e `VS Code`
+2. Crie o app React agora
+3. Instale `react-bootstrap` e `bootstrap`
+4. Leve o projeto completo e a pasta `node_modules`
+5. Converta cada HTML em um componente React
+6. Use Bootstrap em vez de Tailwind e Google Fonts
+
+Se quiser, posso te dar um plano ainda mais técnico para fazer isso com comandos exatos e a estrutura de pastas do React.
+
+Uma estrutura padrão “limpa” de React com back‑end e front‑end separados costuma ser um monorepo com duas pastas principais: `frontend` e `backend`, cada uma sendo um projeto independente.  [github](https://github.com/orgs/community/discussions/174352)
+
+Abaixo vai um esqueleto típico em português:
+
+### Estrutura raiz do repositório
+
+```bash
+meu-projeto/
+├── frontend/          # React (Next.js, Vite, CRA, etc.)
+├── backend/           # Node/Express, Nest, Django, Spring, etc.
+├── docs/              # Documentação (opcional)
+├── .gitignore
+├── README.md
+└── docker-compose.yml # opcional, para rodar os dois juntos
+```
+
+### Exemplo de `frontend/` (React)
+
+```bash
+frontend/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   └── assets/        # imagens, fonts, etc.
+├── src/
+│   ├── components/    # componentes reutilizáveis
+│   ├── pages/         # páginas / rotas
+│   ├── features/      # pastas por feature (auth, dashboard, etc.)
+│   ├── hooks/         # hooks personalizados
+│   ├── services/      # chamadas à API (axios/fetch)
+│   ├── utils/         # funções auxiliares
+│   ├── context/       # contexts globais (AuthProvider, etc.)
+│   ├── store/         # Redux/Zustand/valtio (se usar estado global)
+│   ├── App.tsx        # ou App.jsx
+│   └── index.tsx      # ou main.jsx
+├── .env.local
+├── .env.example
+├── package.json
+└── vite.config.ts     # ou next.config.js, webpack.config.js, etc.
+```
+
+### Exemplo de `backend/` (API REST em Node/Express)
+
+```bash
+backend/
+├── src/
+│   ├── controllers/   # lógica de negócios por rota
+│   ├── routes/        # definições de rotas (API)
+│   ├── models/        # modelos de banco (se usar ORM)
+│   ├── services/      # serviços de negócio (separados dos controllers)
+│   ├── middleware/    # middleware customizado
+│   ├── utils/         # helpers gerais
+│   ├── config/        # config de DB, env, etc.
+│   └── server.ts      # arquivo de entrada do server
+├── .env
+├── .env.example
+├── package.json
+└── dockerfile         # opcional, para Docker
+```
+
+### Relação entre front e back
+
+- O React roda na porta `3000` (por exemplo) e o backend na `3001` ou `8080`.  
+- O front faz chamadas tipo `fetch('/api/usuarios')` disparando para `http://localhost:3001/api/usuarios` (proxy ou configuração no `vite.config.ts` / `package.json` do front).  [github](https://github.com/orgs/community/discussions/174352)
+
+Se quiser, eu posso te montar um exemplo completo em **Next.js + Node/Express** (com código de exemplo de `routes/` e `services/`) já pensando em deploy em produção (Docker, ambiente local, etc.).
+
+Abajo vai um exemplo mínimo e funcional de **front‑end React** (com Vite) e **back‑end Node + Express**, rodando em projetos separados, comunicando-se por uma API REST simples.
+
+***
+
+### 1. Projeto back‑end (Node + Express)
+
+Pasta: `backend/`
+
+#### backend/package.json
+
+```json
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0"
+  }
+}
+```
+
+#### backend/src/server.js
+
+```js
+import express from "express";
+
+const app = express();
+
+app.use(express.json());
+
+// Rota teste da API
+app.get("/api/usuarios", (req, res) => {
+  res.json([
+    { id: 1, nome: "João" },
+    { id: 2, nome: "Maria" }
+  ]);
+});
+
+app.get("/api/saudacao", (req, res) => {
+  res.json({ mensagem: "Olá do back‑end!" });
+});
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
+```
+
+Depois:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Deve aparecer: `Servidor rodando em http://localhost:3001`.
+
+***
+
+### 2. Projeto front‑end (React + Vite)
+
+Pasta: `frontend/`
+
+#### frontend/package.json
+
+```json
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+#### frontend/vite.config.js
+
+```js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
+});
+```
+
+#### frontend/src/App.jsx
+
+```jsx
+import { useEffect, useState } from "react";
+
+function App() {
+  const [usuarios, setUsuarios] = useState([]);
+  const [mensagem, setMensagem] = useState("");
+
+  useEffect(() => {
+    // GET /api/usuarios
+    fetch("/api/usuarios")
+      .then((res) => res.json())
+      .then((dados) => setUsuarios(dados));
+
+    // GET /api/saudacao
+    fetch("/api/saudacao")
+      .then((res) => res.json())
+      .then((dados) => setMensagem(dados.mensagem));
+  }, []);
+
+  return (
+    <div>
+      <h1>Front‑end (React)</h1>
+
+      <h2>Saudação do back‑end</h2>
+      <p>{mensagem}</p>
+
+      <h2>Usuários</h2>
+      <ul>
+        {usuarios.map((u) => (
+          <li key={u.id}>{u.nome}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### frontend/src/main.jsx
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+#### frontend/index.html
+
+```html
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Frontend React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+```
+
+Depois:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Serve vai abrir em `http://localhost:3000` e o front fará chamadas para `/api/...` que são redirecionadas para `http://localhost:3001` (backend).
+
+***
+
+### Resumo do fluxo
+
+- `backend` roda em `http://localhost:3001` e serve dados JSON.  
+- `frontend` roda em `http://localhost:3000` e usa o proxy do Vite para chamar `/api/usuarios` → `/api/` roteia para o back‑end.  
+- São **dois projetos separados**, mas se comunicam perfeitamente via API REST.
+
+Se quiser, eu posso montar também uma versão **com envio de dados (POST)** e um `.env` para ambientes de produção.
+
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management)
+
+Checked terminal output
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/index.js)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/App.js)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/index.css)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/public)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/public/index.html)
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/In%20JavaScript/sticht/login.html#1-1), lines 1 to 100
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages/Login.jsx)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages/Dashboard.jsx)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages/Transactions.jsx)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages/Types.jsx)
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/src/pages/Create.jsx)
+
+Ran terminal command: cd "c:\Users\LENOVO\Documents\GitHub\Project-Cash-Management\cash-management" ; npm start
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+Ran terminal command: cd "c:\Users\LENOVO\Documents\GitHub\Project-Cash-Management\cash-management" ; npm install react react-dom react-scripts
+
+Replacing 10 lines with 41 lines in [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+Replacing 8 lines with 14 lines in [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+
+```
+
+```
+
+
+Ran terminal command: npm start
+
+Ran terminal command: npm start
+
+Ran terminal command: pushd "c:\Users\LENOVO\Documents\GitHub\Project-Cash-Management\cash-management" ; npm start
+
+Read [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+Replacing 6 lines with 6 lines in [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/package.json)
+
+
+```
+
+```
+
+
+Ran terminal command: pushd "c:\Users\LENOVO\Documents\GitHub\Project-Cash-Management\cash-management" ; npm start
+
+Sent `Y` to terminal
+
+Checked terminal output
+
+Created [](file:///c%3A/Users/LENOVO/Documents/GitHub/Project-Cash-Management/cash-management/README.md)
+
+## Projeto React Bootstrap Criado com Sucesso! 🎉
+
+Criei um projeto React completo do zero com Bootstrap para você. Aqui está o que foi feito:
+
+### ✅ Instalação Completa
+- Node.js já estava instalado (v24.15.0)
+- Criado projeto React com `create-react-app`
+- Instaladas dependências: `react-bootstrap`, `bootstrap`, `react-router-dom`
+
+### 📁 Estrutura Criada
+```
+cash-management/
+├── src/
+│   ├── pages/ (Login, Dashboard, Transactions, Types, Create)
+│   ├── App.js (com roteamento)
+│   └── index.js
+├── public/index.html
+├── package.json (com scripts)
+└── README.md (instruções)
+```
+
+### 🚀 Servidor Iniciado
+O projeto está rodando em background. Você pode acessar em `http://localhost:3000`.
+
+### 📦 Para Levar Offline
+Copie **toda a pasta cash-management** (incluindo `node_modules`) para uma pen drive. No local sem internet:
+1. Abra o terminal na pasta
+2. Execute `npm start`
+3. Acesse `http://localhost:3000`
+
+### 🔄 Próximos Passos
+Para converter os HTMLs originais:
+- Copie o conteúdo dos arquivos `.html` do `sticht`
+- Converta classes Tailwind → Bootstrap
+- Use componentes como `<Container>`, `<Row>`, `<Col>`, `<Card>`, etc.
+- Substitua `class` por `className`
+
+O projeto básico está funcionando! Agora você pode trabalhar na conversão dos HTMLs originais usando Bootstrap em vez de Tailwind. Se precisar de ajuda com alguma página específica, me avise!
+
+Made changes.

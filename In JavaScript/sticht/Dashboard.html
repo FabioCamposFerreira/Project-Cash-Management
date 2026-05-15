@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cash Management - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#ddd9d9",
+                        "outline-variant": "#c7c6cb",
+                        "on-secondary-fixed-variant": "#005139",
+                        "on-secondary-container": "#007352",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#201b16",
+                        "primary-fixed": "#e3e2e7",
+                        "on-tertiary-fixed": "#201b16",
+                        "secondary-container": "#60fdc1",
+                        "surface-container": "#f1eded",
+                        "surface": "#fcf8f8",
+                        "on-primary-container": "#838388",
+                        "inverse-surface": "#313030",
+                        "on-tertiary-container": "#8b827b",
+                        "primary-fixed-dim": "#c7c6cb",
+                        "primary": "#000000",
+                        "outline": "#77777b",
+                        "on-primary-fixed": "#1a1b1f",
+                        "inverse-on-surface": "#f4f0f0",
+                        "surface-container-high": "#ebe7e7",
+                        "on-primary-fixed-variant": "#46464b",
+                        "on-tertiary-fixed-variant": "#4c463f",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fcf8f8",
+                        "secondary": "#006c4d",
+                        "on-surface-variant": "#46464b",
+                        "secondary-fixed": "#60fdc1",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#cfc5bd",
+                        "on-background": "#1c1b1c",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-secondary-fixed": "#002115",
+                        "primary-container": "#1a1b1f",
+                        "surface-container-low": "#f7f3f2",
+                        "inverse-primary": "#c7c6cb",
+                        "background": "#fcf8f8",
+                        "tertiary-fixed": "#ece1d8",
+                        "secondary-fixed-dim": "#3bdfa7",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#5e5e63",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-surface": "#1c1b1c",
+                        "capitalflow-green": "#0BCA93",
+                        "capitalflow-dark": "#1A1B1F",
+                        "capitalflow-gray": "#353945",
+                        "capitalflow-light": "#BDBDBD"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "container-margin": "16px",
+                        "xs": "4px",
+                        "xl": "48px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-bold": ["Inter"],
+                        "kpi-display": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-default": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h2": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "h1": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "body-bold": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "kpi-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-default": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-default min-h-screen flex antialiased relative overflow-hidden">
+<!-- Blurred Background Image -->
+<div class="absolute inset-0 z-0 flex items-center justify-center opacity-40 pointer-events-none bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-surface-dim via-surface to-background blur-[100px]">
+</div>
+<!-- SideNavBar Component -->
+<nav class="bg-surface-container-lowest z-10 text-[#0BCA93] font-['Inter'] text-sm font-medium h-screen w-[72px] border-r border-outline-variant/30 hidden md:flex flex-col sticky top-0 shrink-0 items-center">
+<div class="flex flex-col items-center w-full">
+<div class="w-[72px] h-[72px] rounded-none bg-primary flex items-center justify-center text-on-primary font-bold overflow-hidden border-b border-r border-outline-variant/30">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+</div>
+</div>
+<div class="flex-1 space-y-4 mt-6 w-full">
+<a class="flex items-center justify-center w-full h-12 rounded-none bg-surface-container text-primary border-r-[6px] border-[#0BCA93] transition-all duration-200 ease-in-out" href="./Dashboard.html">
+<span class="material-symbols-outlined">dashboard</span>
+</a>
+<a class="flex items-center justify-center w-full h-12 rounded-none text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200 ease-in-out group" href="./Transactions.html">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">swap_horiz</span>
+</a>
+<a class="flex items-center justify-center w-full h-12 rounded-none text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200 ease-in-out group" href="./Types.html">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">payments</span>
+</a>
+</div>
+<div class="mt-auto mb-6 space-y-4 w-full">
+<a class="flex items-center justify-center w-full h-12 rounded-none text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200 ease-in-out group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 z-10 relative">
+<!-- TopAppBar Component -->
+<header class="bg-surface-container-lowest text-on-surface font-['Inter'] antialiased border-b border-outline-variant/30 flex justify-between items-center h-[72px] px-6 w-full sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<!-- Mobile menu button -->
+<button class="md:hidden text-on-primary-fixed p-1 rounded-none hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-h1 text-h1 text-on-surface">Dashboard</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container p-2 rounded-none transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 px-4 border-l border-outline-variant/30">
+<div class="hidden md:flex flex-col items-end text-right">
+<p class="font-body-bold text-body-bold text-on-surface">Raymond Gracia</p>
+</div>
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC82wDVM1crVMsxTLTuty3TbmKlZC8gnlDHSfCoge8zD7IBm-pkweP94U0N2NHy5RPCbcqIAM30ktLTbll4AGQVwKidyGL6t5MOfyy9dQlZBorjdsGHLN2jEIwslCpGvho50Xin5TJCDpeTR1dv_1ZAotnP3Hw4bYp4x7kd4J7cAkso5DHkSsjLPxLjBAVlIHQUCXK1VKwC6HGwQpQsmbIGhwXN97E6sGwXqYB-6SdmoR_lDCvmA8KZNY86W9OOmbiw4EEIXqc_O4s"/>
+</div>
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80 ml-2">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="text-sm font-medium hidden md:inline uppercase tracking-widest text-[10px]">Sign Out</span>
+</button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-6 md:p-lg overflow-y-auto bg-transparent">
+<div class="max-w-6xl mx-auto space-y-6">
+<!-- Page Header & Filter -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2 border-b border-outline-variant/30">
+<div class="flex items-center gap-4 flex-wrap">
+<div class="flex items-center gap-2 relative">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">filter_alt</span>
+<select class="bg-surface-container-lowest border border-outline-variant text-on-surface text-sm rounded-none px-4 py-1.5 focus:ring-0 focus:border-[#0BCA93] cursor-pointer hover:border-[#0BCA93] transition-colors appearance-none pr-8">
+<option>Category</option>
+<option>Alimentação</option>
+<option>Transporte</option>
+<option>Saúde</option>
+<option>Lazer</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-sm absolute right-2 pointer-events-none">expand_more</span>
+</div>
+<div class="flex items-center gap-2 relative">
+<select class="bg-surface-container-lowest border border-outline-variant text-on-surface text-sm rounded-none px-4 py-1.5 focus:ring-0 focus:border-[#0BCA93] cursor-pointer hover:border-[#0BCA93] transition-colors appearance-none pr-8">
+<option>Account</option>
+<option>Checking</option>
+<option>Savings</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-sm absolute right-2 pointer-events-none">expand_more</span>
+</div>
+<div class="flex items-center gap-2 relative">
+<select class="bg-surface-container-lowest border border-outline-variant text-on-surface text-sm rounded-none px-4 py-1.5 focus:ring-0 focus:border-[#0BCA93] cursor-pointer hover:border-[#0BCA93] transition-colors appearance-none pr-8">
+<option>Status</option>
+<option>Pending</option>
+<option>Completed</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-sm absolute right-2 pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-2 relative">
+<select class="bg-surface-container-lowest border border-outline-variant text-on-surface text-sm rounded-none px-4 py-1.5 focus:ring-0 focus:border-[#0BCA93] cursor-pointer hover:border-[#0BCA93] transition-colors appearance-none pr-8">
+<option>Mês Atual</option>
+<option>Mês Passado</option>
+<option>Últimos 3 Meses</option>
+<option>Ano Atual</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-sm absolute right-2 pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col justify-between min-h-[140px] relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<p class="font-body-default text-on-surface-variant">Electricity<br/><span class="font-body-bold">$ 250.00</span></p>
+<p class="font-kpi-display text-[#0BCA93] mt-2">R$ 15.000,15</p>
+</div>
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col justify-between min-h-[140px] relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<p class="font-body-default text-on-surface-variant">Cloud Storage<br/><span class="font-body-bold">$ 45.00</span></p>
+<p class="font-kpi-display text-[#0BCA93] mt-2">R$ 1.000,15</p>
+</div>
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col justify-between min-h-[140px] relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<p class="font-body-default text-on-surface-variant">Maintenance<br/><span class="font-body-bold">$ 1,200.00</span></p>
+<p class="font-kpi-display text-[#0BCA93] mt-2">+ 15%</p>
+</div>
+</div>
+<!-- Charts Area -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Pie Chart -->
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col h-[400px] relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<h3 class="font-body-bold text-on-surface mb-6">Expenses By Category</h3>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Simulated Pie Chart -->
+<div class="w-48 h-48 rounded-full border-[16px] border-surface-variant relative overflow-hidden flex items-center justify-center shadow-inner">
+<div class="absolute inset-0 bg-gradient-to-tr from-purple-500 via-pink-500 to-transparent" style="clip-path: polygon(50% 50%, 100% 0, 100% 100%, 50% 100%);"></div>
+<div class="absolute inset-0 bg-[#0BCA93]" style="clip-path: polygon(50% 50%, 0 0, 50% 0);"></div>
+<div class="absolute inset-0 bg-blue-400" style="clip-path: polygon(50% 50%, 0 100%, 0 0);"></div>
+<div class="absolute inset-0 bg-orange-400" style="clip-path: polygon(50% 50%, 50% 100%, 100% 100%);"></div>
+<div class="w-32 h-32 bg-surface-container-lowest rounded-full z-10 flex items-center justify-center shadow-sm">
+<span class="font-body-bold text-on-surface-variant">100%</span>
+</div>
+</div>
+<!-- Labels -->
+<div class="absolute top-4 right-8 font-caption text-purple-600 font-medium">Alimentação 38%</div>
+<div class="absolute bottom-8 left-4 font-caption text-blue-500 font-medium">Transporte 25%</div>
+<div class="absolute bottom-4 right-12 font-caption text-orange-500 font-medium">Saúde 22%</div>
+<div class="absolute bottom-16 right-24 font-caption text-pink-500 font-medium">Lazer 16%</div>
+</div>
+<div class="mt-4 flex justify-center gap-4 flex-wrap">
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-purple-500 rounded-none"></div><span class="font-caption text-on-surface-variant">Alimentação</span></div>
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-blue-400 rounded-none"></div><span class="font-caption text-on-surface-variant">Transporte</span></div>
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-pink-500 rounded-none"></div><span class="font-caption text-on-surface-variant">Lazer</span></div>
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-orange-400 rounded-none"></div><span class="font-caption text-on-surface-variant">Saúde</span></div>
+</div>
+</div>
+<!-- Line Chart -->
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col h-[400px] relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<h3 class="font-body-bold text-on-surface mb-6">Summary By Type</h3>
+<div class="flex-1 w-full bg-surface-variant/20 border border-outline-variant/30 relative flex items-end p-4 rounded-none overflow-hidden backdrop-blur-sm">
+<!-- Simulated Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-4 opacity-10 pointer-events-none">
+<div class="w-full border-b border-primary"></div>
+<div class="w-full border-b border-primary"></div>
+<div class="w-full border-b border-primary"></div>
+<div class="w-full border-b border-primary"></div>
+<div class="w-full border-b border-primary"></div>
+</div>
+<!-- Simulated Line Chart Path -->
+<svg class="absolute inset-0 w-full h-full p-4" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M 0 80 Q 20 70, 40 50 T 60 40 T 80 60 T 100 30" fill="none" stroke="#0BCA93" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<path d="M 0 90 Q 30 85, 50 70 T 70 80 T 100 60" fill="none" stroke="#a855f7" stroke-dasharray="4" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+<!-- X Axis Labels -->
+<div class="absolute bottom-0 left-0 w-full flex justify-between px-4 pb-1 text-[10px] text-on-surface-variant">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pending Minimum Expenses Section -->
+<div class="bg-surface-container-lowest border-t-primary border border-outline-variant p-6 rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<h3 class="font-body-bold text-on-surface mb-6">Pending Minimum Expenses</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Expense Item 1 -->
+<div class="flex flex-col p-4 bg-surface-container-low border border-outline-variant/30 relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<p class="font-body-default text-on-surface">Electricity<br/><span class="font-body-bold">$ 250.00</span></p>
+</div>
+<!-- Expense Item 2 -->
+<div class="flex flex-col p-4 bg-surface-container-low border border-outline-variant/30 relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<p class="font-body-default text-on-surface">Cloud Storage<br/><span class="font-body-bold">$ 45.00</span></p>
+</div>
+<!-- Expense Item 3 -->
+<div class="flex flex-col p-4 bg-surface-container-low border border-outline-variant/30 relative">
+<div class="absolute top-0 left-0 w-full bg-primary h-px"></div>
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<p class="font-body-default text-on-surface">Maintenance<br/><span class="font-body-bold">$ 1,200.00</span></p>
+</div>
+</div>
+</div></div>
+</main>
+</div>
+</body></html>
