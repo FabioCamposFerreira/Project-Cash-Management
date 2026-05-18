@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import Button from '../components/Button/Button.tsx';
 
 const Login = () => {
   return (
@@ -19,9 +20,7 @@ const Login = () => {
                   <Form.Label>Password</Form.Label>
                   <Form.Control type="password" placeholder="Password" />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100">
-                  Sign In
-                </Button>
+                <Button text="Sign In" type="submit" />
               </Form>
             </Card.Body>
           </Card>
