@@ -1,0 +1,28 @@
+// 1. Estilo fonte e botões
+$font-family-base: 'Inter', sans-serif;
+$btn-font-size: 0.875rem;
+
+// 2. Cores principais
+$primary: #000000;
+
+// 3. Ativar o uso de sombras no Bootstrap (obrigatório!)
+$enable-shadows: true;
+
+// 4. Criar a sombra e INSERIR no mapa padrão sem deletar o resto
+$box-shadow-custom: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+// Definimos o mapa inicial vazando a sua sombra
+$shadows: (
+  'custom': $box-shadow-custom
+);
+
+// 5. IMPORTAR PRIMEIRO AS FUNÇÕES E VARIÁVEIS DO BOOTSTRAP
+// (Necessário para o map-merge funcionar)
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+// 6. Juntar a sua sombra com as sombras padrões do Bootstrap
+$shadows: map-merge($shadows, ()); 
+
+// 7. Importar o resto do Bootstrap
+@import "bootstrap/scss/bootstrap";

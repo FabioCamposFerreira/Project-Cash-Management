@@ -20,7 +20,7 @@ const Login = () => {
                   <Form.Label>Password</Form.Label>
                   <Form.Control type="password" placeholder="Password" />
                 </Form.Group>
-                <Button text="Sign In" type="submit" />
+                <Button text="Log In" type="submit" />
               </Form>
             </Card.Body>
           </Card>
