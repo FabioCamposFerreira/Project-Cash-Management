@@ -69,3 +69,32 @@ Para converter os HTMLs originais:
 ## Para levar offline
 
 Copie toda a pasta `cash-management` incluindo `node_modules` para o local sem internet. Execute `npm start` lá.
+
+
+frontend/
+├── public/                # Arquivos estáticos (index.html, favicon)
+└── src/
+    ├── assets/            # Imagens, ícones globais, fontes
+    ├── components/        # Componentes globais e reutilizáveis
+    │   ├── common/        # Botões, inputs, loaders (UI básica)
+    │   │   ├── Button/
+    │   │   │   ├── Button.tsx
+    │   │   │   └── Button.styles.ts
+    │   │   └── Input/
+    │   ├── layout/        # Header, Footer, Sidebar
+    │   └── feedback/      # Modais, Alerts, Toasts
+    ├── context/           # Contextos globais do React (ex: AuthContext)
+    ├── hooks/             # Custom hooks globais (ex: useAuth, useFetch)
+    ├── pages/             # Páginas da aplicação (roteamento)
+    │   ├── Home/
+    │   │   ├── components/# Componentes exclusivos desta página
+    │   │   └── Home.tsx
+    │   └── Login/
+    ├── routes/            # Configuração das rotas (React Router)
+    ├── services/          # Integração com o Back-end (Chamadas de API)
+    │   ├── api.ts         # Configuração do Axios / Fetch Client
+    │   └── authService.ts # Métodos específicos (login, logout)
+    ├── styles/            # Configurações globais de CSS / Temas
+    ├── utils/             # Funções utilitárias puras (validações, formatações)
+    ├── App.tsx            # Componente raiz
+    └── main.tsx           # Ponto de entrada do React

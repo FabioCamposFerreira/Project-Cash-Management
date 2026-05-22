@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Transactions from './pages/Transactions';
 import Types from './pages/Types';
 import Create from './pages/Create';
+import './assets/styles/variables.scss';
 
 function App() {
   return (
