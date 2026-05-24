@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>Institutional Access - Log In</title>
+        <!-- BEGIN: Scripts and Fonts -->
+        <script src="3.4.js"></script>
+        <link href="css2.css"
+                rel="stylesheet">
+        <script id="tailwind-config">
+                tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                                extend: {
+                                        "colors": {
+                                                "primary": "#000000",
+                                                "on-secondary-fixed-variant": "#005139",
+                                                "error-container": "#ffdad6",
+                                                "surface-container-lowest": "#ffffff",
+                                                "on-error": "#ffffff",
+                                                "inverse-on-surface": "#f4f0f0",
+                                                "on-error-container": "#93000a",
+                                                "on-tertiary-container": "#8b827b",
+                                                "surface-container-high": "#ebe7e7",
+                                                "on-surface-variant": "#46464b",
+                                                "secondary-fixed-dim": "#3bdfa7",
+                                                "surface-container-low": "#f7f3f2",
+                                                "on-surface": "#1c1b1c",
+                                                "tertiary-fixed-dim": "#cfc5bd",
+                                                "background": "#fcf8f8",
+                                                "surface-container": "#f1eded",
+                                                "on-secondary": "#ffffff",
+                                                "on-secondary-container": "#007352",
+                                                "on-secondary-fixed": "#002115",
+                                                "on-tertiary": "#ffffff",
+                                                "on-tertiary-fixed": "#201b16",
+                                                "on-primary-fixed": "#1a1b1f",
+                                                "on-background": "#1c1b1c",
+                                                "primary-fixed-dim": "#c7c6cb",
+                                                "primary-fixed": "#e3e2e7",
+                                                "primary-container": "#1a1b1f",
+                                                "on-primary": "#ffffff",
+                                                "on-primary-container": "#838388",
+                                                "tertiary-container": "#201b16",
+                                                "surface-variant": "#e5e2e1",
+                                                "secondary": "#006c4d",
+                                                "tertiary-fixed": "#ece1d8",
+                                                "inverse-surface": "#313030",
+                                                "outline-variant": "#c7c6cb",
+                                                "surface-container-highest": "#e5e2e1",
+                                                "on-tertiary-fixed-variant": "#4c463f",
+                                                "tertiary": "#000000",
+                                                "surface-tint": "#5e5e63",
+                                                "surface-dim": "#ddd9d9",
+                                                "surface-bright": "#fcf8f8",
+                                                "surface": "#fcf8f8",
+                                                "secondary-fixed": "#60fdc1",
+                                                "on-primary-fixed-variant": "#46464b",
+                                                "outline": "#77777b",
+                                                "secondary-container": "#60fdc1",
+                                                "error": "#ba1a1a",
+                                                "inverse-primary": "#c7c6cb"
+                                        },
+                                        "borderRadius": {
+                                                "DEFAULT": "1rem",
+                                                "lg": "2rem",
+                                                "xl": "3rem",
+                                                "full": "9999px"
+                                        },
+                                        "spacing": {
+                                                "lg": "24px",
+                                                "base": "8px",
+                                                "sm": "8px",
+                                                "md": "16px",
+                                                "xs": "4px",
+                                                "xl": "48px",
+                                                "gutter": "16px",
+                                                "container-margin": "16px"
+                                        },
+                                        "fontFamily": {
+                                                "caption": [
+                                                        "Inter"
+                                                ],
+                                                "h1": [
+                                                        "Inter"
+                                                ],
+                                                "body-default": [
+                                                        "Inter"
+                                                ],
+                                                "body-bold": [
+                                                        "Inter"
+                                                ],
+                                                "label-caps": [
+                                                        "Inter"
+                                                ],
+                                                "kpi-display": [
+                                                        "Inter"
+                                                ],
+                                                "h2": [
+                                                        "Inter"
+                                                ]
+                                        },
+                                        "fontSize": {
+                                                "caption": [
+                                                        "12px",
+                                                        {
+                                                                "lineHeight": "16px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "h1": [
+                                                        "20px",
+                                                        {
+                                                                "lineHeight": "28px",
+                                                                "fontWeight": "700"
+                                                        }
+                                                ],
+                                                "body-default": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "body-bold": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "label-caps": [
+                                                        "12px",
+                                                        {
+                                                                "lineHeight": "16px",
+                                                                "letterSpacing": "0.05em",
+                                                                "fontWeight": "700"
+                                                        }
+                                                ],
+                                                "kpi-display": [
+                                                        "24px",
+                                                        {
+                                                                "lineHeight": "32px",
+                                                                "letterSpacing": "-0.02em",
+                                                                "fontWeight": "800"
+                                                        }
+                                                ],
+                                                "h2": [
+                                                        "18px",
+                                                        {
+                                                                "lineHeight": "24px",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ]
+                                        }
+                                },
+                        },
+                }
+        </script>
+        <!-- END: Scripts and Fonts -->
+        <style data-purpose="custom-styling">
+                body {
+                        font-family: 'Inter', sans-serif;
+                }
+
+                .sharp-input {
+                        border: 1px solid #c7c6cb !important;
+                        border-radius: 0px !important;
+                        transition: all 0.2s ease-in-out;
+                }
+
+                .sharp-input::placeholder {
+                        color: #838388 !important;
+                }
+
+                .sharp-input:focus {
+                        border-color: #000000 !important;
+                        outline: none !important;
+                        box-shadow: inset 0 0 0 1px #000000 !important;
+                }
+
+                .sharp-input:disabled {
+                        opacity: 0.5;
+                        background-color: #f7f3f2;
+                }
+        </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
+        <!-- BEGIN: Blurred Background Image -->
+        <div
+                class="absolute inset-0 z-0 flex items-center justify-center opacity-40 pointer-events-none bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-surface-dim via-surface to-background blur-[100px]">
+        </div>
+        <!-- END: Blurred Background Image -->
+        <!-- BEGIN: MainContainer -->
+        <main class="w-full flex flex-col items-center justify-center p-6 sm:p-12 z-10 relative">
+                <!-- BEGIN: HeaderSection -->
+                <header class="mb-10 flex flex-col items-center text-center">
+                        <div class="mb-4 flex flex-col items-center">
+                                <!-- Institutional logo centered -->
+                                <div
+                                        class="w-16 h-16 bg-primary rounded-none flex items-center justify-center text-on-primary mb-5 shadow-lg border border-outline-variant/30">
+                                        <svg fill="none" height="32" stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="32">
+                                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5">
+                                                </path>
+                                        </svg>
+                                </div>
+                                <h1 class="text-2xl font-extrabold text-on-surface tracking-tight font-kpi-display">CASH
+                                        MANAGEMENT</h1>
+                                <p
+                                        class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-label-caps mt-2">
+                                <div
+                                        style="color: rgb(0, 0, 0); background-color: rgb(239, 239, 239); font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+                                        control your money, control your life</div>
+                                </p>
+                        </div>
+                </header>
+                <!-- END: HeaderSection -->
+                <!-- BEGIN: LoginCard -->
+                <section
+                        class="w-full max-w-[420px] bg-surface-container-lowest border border-outline-variant p-10 md:p-12 shadow-2xl rounded-none relative">
+                        <!-- Top accent bar for structural geometry -->
+                        <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+                        <!-- BEGIN: CardTitle -->
+                        <div class="text-center mb-8">
+                                <h2 class="text-xl font-bold text-on-surface font-h1">LOGIN</h2>
+                                <p class="text-sm text-on-surface-variant mt-2 font-body-default">Enter your credentials
+                                        to access the system.</p>
+                        </div>
+                        <!-- END: CardTitle -->
+                        <!-- BEGIN: LoginForm -->
+                        <form action="#" class="space-y-6" method="POST">
+                                <!-- BEGIN: EmailField -->
+                                <div data-purpose="input-group">
+                                        <label class="block text-xs font-bold text-on-surface mb-2 uppercase tracking-wide font-label-caps"
+                                                for="email">EMAIL</label>
+                                        <input class="sharp-input w-full px-5 py-3.5 text-sm bg-surface-container-lowest font-body-default rounded-none"
+                                                id="email" name="email" placeholder="name.surname@fund.gov" required=""
+                                                type="email">
+                                </div>
+                                <!-- END: EmailField -->
+                                <!-- BEGIN: PasswordField -->
+                                <div data-purpose="input-group">
+                                        <div class="flex justify-between items-center mb-2">
+                                                <label class="block text-xs font-bold text-on-surface uppercase tracking-wide font-label-caps"
+                                                        for="password">Password</label>
+                                                <a class="text-xs font-bold text-secondary hover:text-primary transition-colors font-body-bold"
+                                                        href="#">Forgot Password?</a>
+                                        </div>
+                                        <input class="sharp-input w-full px-5 py-3.5 text-sm bg-surface-container-lowest font-body-default rounded-none"
+                                                id="password" name="password" placeholder="••••••••" required=""
+                                                type="password">
+                                </div>
+                                <!-- END: PasswordField -->
+                                <!-- BEGIN: ActionButtons -->
+                                <div class="space-y-4 pt-6">
+                                        <!-- Primary Login Button -->
+                                        <button class="w-full bg-primary text-on-primary font-bold py-4 px-6 hover:bg-primary/90 transition-all text-sm uppercase tracking-widest shadow-md font-body-bold rounded-full"
+                                                type="submit">
+                                                Log In
+                                        </button>
+                                </div>
+                                <div class="text-center mt-6 text-sm text-on-surface-variant font-body-default">
+                                        Don't have an account? <a
+                                                class="text-secondary font-bold hover:text-primary hover:underline transition-colors"
+                                                href="./create.html">Sign Up</a>
+                                </div>
+                                <!-- END: ActionButtons -->
+                        </form>
+                        <!-- END: LoginForm -->
+                </section>
+                <!-- END: LoginCard -->
+                <!-- BEGIN: PageFooter -->
+                <footer
+                        class="mt-12 text-on-surface-variant text-[10px] uppercase tracking-widest text-center opacity-60 font-label-caps">
+                        © 2024 • Internal System v2.4
+                </footer>
+                <!-- END: PageFooter -->
+        </main>
+        <!-- END: MainContainer -->
+
+
+</body>
+
+</html>
