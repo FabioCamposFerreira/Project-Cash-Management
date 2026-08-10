@@ -30,7 +30,7 @@ const Button: React.FC<ButtonProps> = ({
     'px-4',
     'small',
     'border-0',
-    'shadow-custom'
+    'shadow-button'
   ].filter(Boolean).join(" ");
 
   return (
